@@ -6,7 +6,7 @@ export default function DragBehavior(props) {
   const nodeRef = useRef();
   const valueAtDragStartRef = useRef(props.value || 0);
 
-  const {snapToMouseLinearHorizontal, value, onChange, ...other} = props;
+  const { snapToMouseLinearHorizontal, value, onChange, ...other } = props;
 
   const bindDragHandlers = useDrag((state) => {
     if (state.first && typeof value === 'number') {

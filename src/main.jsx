@@ -9,7 +9,7 @@ import './index.css'
 
 
 // Initial state management
-const store = createStore(() => {});
+const store = createStore(() => { });
 const useStore = createHooks(store);
 
 const errorStore = createStore(() => ({ error: null }));
@@ -35,7 +35,7 @@ if (process.env.NODE_ENV !== 'production') {
   });
 }
 
-globalThis.__receiveStateChange__ = function(state) {
+globalThis.__receiveStateChange__ = function (state) {
   store.setState(JSON.parse(state));
 };
 
@@ -46,7 +46,7 @@ globalThis.__receiveError__ = (err) => {
 // Mount the interface
 function App(props) {
   let state = useStore();
-  let {error} = useErrorStore();
+  let { error } = useErrorStore();
 
   return (
     <Interface

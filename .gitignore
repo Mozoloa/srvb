@@ -24,3 +24,8 @@ public/dsp.main.js
 *.sln
 *.sw?
 *.swp
+
+#drives
+desktop.ini
+Thumbs.db
+**/desktop.ini

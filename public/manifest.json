@@ -4,9 +4,13 @@
     "height": 373
   },
   "parameters": [
-    { "paramId": "size",    "name": "Size",     "min": 0.0, "max": 1.0, "defaultValue": 0.5 },
-    { "paramId": "decay",   "name": "Decay",    "min": 0.0, "max": 1.0, "defaultValue": 0.5 },
-    { "paramId": "mod",     "name": "Mod",      "min": 0.0, "max": 1.0, "defaultValue": 0.5 },
-    { "paramId": "mix",     "name": "Mix",      "min": 0.0, "max": 1.0, "defaultValue": 0.5 }
+    {
+      "paramId": "outGain",
+      "name": "Gain",
+      "min": -12.0,
+      "max": 12.0,
+      "defaultValue": 1.0,
+      "Log": true
+    }
   ]
 }

@@ -1,6 +1,6 @@
-import {Renderer, el} from '@elemaudio/core';
-import {RefMap} from './RefMap';
-import srvb from './srvb';
+import { Renderer, el } from '@elemaudio/core';
+import { RefMap } from './RefMap';
+import out from './out';
 
 
 // This project demonstrates writing a small FDN reverb effect in Elementary.
@@ -20,7 +20,38 @@ let refs = new RefMap(core);
 let prevState = null;
 
 function shouldRender(prevState, nextState) {
-  return (prevState === null) || (prevState.sampleRate !== nextState.sampleRate);
+  if (prevState === null || prevState.sampleRate !== nextState.sampleRate) {
+    console.log('Full render');
+    return true;
+  }
+}
+// This function takes the incoming state and prepares it for rendering. It only creates refs if the param is going to be used in a dsp (aka mounted), so order which is just an integer is not a dsp param and doesn't need a ref. Same with sampleRate.
+function prepProps(state, key) {
+  let newProps = {
+    key: key,
+  }
+  for (let [k, v] of Object.entries(state)) {
+    if (k === 'sampleRate' || k.includes("order")) {
+      newProps[k] = v;
+    } else {
+      newProps[k] = refs.getOrCreate(k, 'const', { value: v }, []);
+    }
+  }
+  return newProps;
+}
+
+function updateProps(state) {
+  for (let [k, v] of Object.entries(state)) {
+    if (k === 'sampleRate' || k.includes("order")) {
+      continue;
+    }
+    try {
+      refs.update(k, { value: v });
+      console.log(`Updatied ref '${k}' with value`, v);
+    } catch (error) {
+      console.log(`Error updating ref '${k}': '${error}'`);
+    }
+  }
 }
 
 // The important piece: here we register a state change callback with the native
@@ -31,24 +62,16 @@ function shouldRender(prevState, nextState) {
 // on the result of our `shouldRender` check.
 globalThis.__receiveStateChange__ = (serializedState) => {
   const state = JSON.parse(serializedState);
-
   if (shouldRender(prevState, state)) {
-    let stats = core.render(...srvb({
-      key: 'srvb',
-      sampleRate: state.sampleRate,
-      size: refs.getOrCreate('size', 'const', {value: state.size}, []),
-      decay: refs.getOrCreate('decay', 'const', {value: state.decay}, []),
-      mod: refs.getOrCreate('mod', 'const', {value: state.mod}, []),
-      mix: refs.getOrCreate('mix', 'const', {value: state.mix}, []),
-    }, el.in({channel: 0}), el.in({channel: 1})));
-
-    console.log(stats);
+    const left = el.in({ channel: 0 });
+    const right = el.in({ channel: 1 });
+    const props = prepProps(state, 'comp');
+    console.log('Rendering with props', props);
+    let stats = core.render(...out(props, left, right));
+    console.log("rendering", stats);
   } else {
-    console.log('Updating refs');
-    refs.update('size', {value: state.size});
-    refs.update('decay', {value: state.decay});
-    refs.update('mod', {value: state.mod});
-    refs.update('mix', {value: state.mix});
+    console.log('Updating refs with new state', state);
+    updateProps(state);
   }
 
   prevState = state;
