@@ -1,7 +1,6 @@
 import { Renderer, el } from '@elemaudio/core';
 import { RefMap } from './RefMap';
-import out from './out';
-
+import channelStrip from './channelStrip';
 
 // This project demonstrates writing a small FDN reverb effect in Elementary.
 //
@@ -47,7 +46,7 @@ function updateProps(state) {
     }
     try {
       refs.update(k, { value: v });
-      console.log(`Updatied ref '${k}' with value`, v);
+      /*   console.log(`Updatied ref '${k}' with value`, v); */
     } catch (error) {
       console.log(`Error updating ref '${k}': '${error}'`);
     }
@@ -63,20 +62,22 @@ function updateProps(state) {
 globalThis.__receiveStateChange__ = (serializedState) => {
   const state = JSON.parse(serializedState);
   if (shouldRender(prevState, state)) {
-    const left = el.in({ channel: 0 });
-    const right = el.in({ channel: 1 });
-    const props = prepProps(state, 'comp');
-    console.log('Rendering with props', props);
-    let stats = core.render(...out(props, left, right));
+    const props = prepProps(state, 'channelStrip');
+    console.log('Starting rendering with props:', props);
+
+    const strip = channelStrip(props, el.in({ channel: 0 }), el.in({ channel: 1 }));
+    let stats = core.render(
+      strip.left,
+      strip.right
+    );
     console.log("rendering", stats);
   } else {
-    console.log('Updating refs with new state', state);
+    /* console.log('Updating refs with new state', state); */
     updateProps(state);
   }
 
   prevState = state;
 };
-
 // NOTE: This is highly experimental and should not yet be relied on
 // as a consistent feature.
 //

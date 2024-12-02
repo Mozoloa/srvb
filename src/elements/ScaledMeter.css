@@ -1,0 +1,117 @@
+#scaled-meter {
+    position: relative;
+    display: flex;
+    overflow: hidden;
+}
+
+.stereo-meter-container {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+#meter-container {
+    position: relative;
+    background-color: var(--secondary-color);
+    overflow: hidden;
+    border-radius: 1px;
+}
+
+#meter-value {
+    position: absolute;
+    background-color: white;
+    transition: all 0.05s ease-out;
+}
+
+#meter-overlay {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    mix-blend-mode: multiply;
+    border-radius: inherit;
+}
+
+.gr-signal {
+    background-color: var(--tool-level-color);
+}
+
+.input-signal {
+    background: linear-gradient(var(--unsafe-high-level-color) 0%, var(--unsafe-high-level-color) 30%, var(--safe-high-level-color) 40%, var(--safe-high-level-color) 40%, var(--safe-low-level-color) 60%);
+}
+
+.output-signal {
+    background: linear-gradient(var(--unsafe-high-level-color) 5%, var(--safe-high-level-color) 10%, var(--safe-high-level-color) 45%, var(--safe-low-level-color) 60%);
+}
+
+#meter-overload {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+.overload {
+    opacity: 1;
+    background-color: var(--clippîng-level-color);
+}
+
+.overload-safe {
+    opacity: 0;
+    transition: all 1s ease-out;
+}
+
+/* Decibel scale, the text and the dots */
+
+#decibel-scale {
+    position: absolute;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 8px;
+    color: var(--text-color);
+    text-shadow:
+        1px 1px 1px black,
+        -1px -1px 1px black,
+        1px -1px 1px black,
+        -1px 1px 1px black;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.scale-element-container {
+    width: 0;
+    /* Adjust size as needed */
+    height: 0;
+    /* Adjust size as needed */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.scale-element {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 15px;
+    height: 15px;
+    transform-origin: center center;
+    transform: scale(1);
+    /* Example transformation */
+}
+
+.scale-dot {
+    box-shadow: 0px 0px 2px black;
+    background-color: var(--text-color);
+    width: 1px;
+    height: 1px;
+}
+
+.scale-mark {
+    text-align: center;
+    width: 15px;
+    overflow: hidden;
+}

@@ -5,7 +5,7 @@
 
 #include <choc_javascript.h>
 #include <elem/Runtime.h>
-
+#include "LambdaTimer.h"
 
 //==============================================================================
 class EffectsPluginProcessor
@@ -19,16 +19,16 @@ public:
     ~EffectsPluginProcessor() override;
 
     //==============================================================================
-    juce::AudioProcessorEditor* createEditor() override;
+    juce::AudioProcessorEditor *createEditor() override;
     bool hasEditor() const override;
 
     //==============================================================================
-    void prepareToPlay (double sampleRate, int samplesPerBlock) override;
+    void prepareToPlay(double sampleRate, int samplesPerBlock) override;
     void releaseResources() override;
 
-    bool isBusesLayoutSupported (const juce::AudioProcessor::BusesLayout& layouts) const override;
+    bool isBusesLayoutSupported(const juce::AudioProcessor::BusesLayout &layouts) const override;
 
-    void processBlock (juce::AudioBuffer<float>&, juce::MidiBuffer&) override;
+    void processBlock(juce::AudioBuffer<float> &, juce::MidiBuffer &) override;
 
     //==============================================================================
     const juce::String getName() const override;
@@ -41,18 +41,18 @@ public:
     //==============================================================================
     int getNumPrograms() override;
     int getCurrentProgram() override;
-    void setCurrentProgram (int index) override;
-    const juce::String getProgramName (int index) override;
-    void changeProgramName (int index, const juce::String& newName) override;
+    void setCurrentProgram(int index) override;
+    const juce::String getProgramName(int index) override;
+    void changeProgramName(int index, const juce::String &newName) override;
 
     //==============================================================================
-    void getStateInformation (juce::MemoryBlock& destData) override;
-    void setStateInformation (const void* data, int sizeInBytes) override;
+    void getStateInformation(juce::MemoryBlock &destData) override;
+    void setStateInformation(const void *data, int sizeInBytes) override;
 
     //==============================================================================
     /** Implement the AudioProcessorParameter::Listener interface. */
-    void parameterValueChanged (int parameterIndex, float newValue) override;
-    void parameterGestureChanged (int parameterIndex, bool gestureIsStarting) override;
+    void parameterValueChanged(int parameterIndex, float newValue) override;
+    void parameterGestureChanged(int parameterIndex, bool gestureIsStarting) override;
 
     //==============================================================================
     /** Implement the AsyncUpdater interface. */
@@ -64,11 +64,11 @@ public:
 
     /** Internal helper for propagating processor state changes. */
     void dispatchStateChange();
-    void dispatchError(std::string const& name, std::string const& message);
+    void dispatchError(std::string const &name, std::string const &message);
 
 private:
     //==============================================================================
-    std::atomic<bool> shouldInitialize { false };
+    std::atomic<bool> shouldInitialize{false};
     double lastKnownSampleRate = 0;
     int lastKnownBlockSize = 0;
 
@@ -78,11 +78,13 @@ private:
     juce::AudioBuffer<float> scratchBuffer;
 
     std::unique_ptr<elem::Runtime<float>> runtime;
+    std::unique_ptr<LambdaTimer<std::function<void()>>> eventsTimer;
 
     //==============================================================================
     // A simple "dirty list" abstraction here for propagating realtime parameter
     // value changes
-    struct ParameterReadout {
+    struct ParameterReadout
+    {
         float value = 0;
         bool dirty = false;
     };
@@ -91,5 +93,5 @@ private:
     static_assert(std::atomic<ParameterReadout>::is_always_lock_free);
 
     //==============================================================================
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (EffectsPluginProcessor)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(EffectsPluginProcessor)
 };

@@ -1,0 +1,19 @@
+#knob-container {
+    cursor: pointer;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 60px;
+    height: 60px;
+}
+
+#knob-name {
+    color: var(--text-color);
+    font-size: 0.7rem;
+    font-weight: bold;
+    text-align: center;
+    width: 100%;
+    overflow: hidden;
+}

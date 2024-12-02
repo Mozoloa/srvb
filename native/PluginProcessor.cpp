@@ -3,19 +3,18 @@
 
 #include <choc_javascript_QuickJS.h>
 
-
 //==============================================================================
 // A quick helper for locating bundled asset files
 juce::File getAssetsDirectory()
 {
 #if JUCE_MAC
     auto assetsDir = juce::File::getSpecialLocation(juce::File::SpecialLocationType::currentApplicationFile)
-        .getChildFile("Contents/Resources/dist");
+                         .getChildFile("Contents/Resources/dist");
 #elif JUCE_WINDOWS
     auto assetsDir = juce::File::getSpecialLocation(juce::File::SpecialLocationType::currentExecutableFile) // Plugin.vst3/Contents/<arch>/Plugin.vst3
-        .getParentDirectory()  // Plugin.vst3/Contents/<arch>/
-        .getParentDirectory()  // Plugin.vst3/Contents/
-        .getChildFile("Resources/dist");
+                         .getParentDirectory()                                                              // Plugin.vst3/Contents/<arch>/
+                         .getParentDirectory()                                                              // Plugin.vst3/Contents/
+                         .getChildFile("Resources/dist");
 #else
 #error "We only support Mac and Windows here yet."
 #endif
@@ -25,10 +24,10 @@ juce::File getAssetsDirectory()
 
 //==============================================================================
 EffectsPluginProcessor::EffectsPluginProcessor()
-     : AudioProcessor (BusesProperties()
-                       .withInput  ("Input",  juce::AudioChannelSet::stereo(), true)
-                       .withOutput ("Output", juce::AudioChannelSet::stereo(), true))
-     , jsContext(choc::javascript::createQuickJSContext())
+    : AudioProcessor(BusesProperties()
+                         .withInput("Input", juce::AudioChannelSet::stereo(), true)
+                         .withOutput("Output", juce::AudioChannelSet::stereo(), true)),
+      jsContext(choc::javascript::createQuickJSContext())
 {
     // Initialize parameters from the manifest file
 #if ELEM_DEV_LOCALHOST
@@ -50,7 +49,8 @@ EffectsPluginProcessor::EffectsPluginProcessor()
 
     auto parameters = manifest.getWithDefault("parameters", elem::js::Array());
 
-    for (size_t i = 0; i < parameters.size(); ++i) {
+    for (size_t i = 0; i < parameters.size(); ++i)
+    {
         auto descrip = parameters[i];
 
         if (!descrip.isObject())
@@ -62,18 +62,17 @@ EffectsPluginProcessor::EffectsPluginProcessor()
         auto maxValue = descrip.getWithDefault("max", elem::js::Number(1));
         auto defValue = descrip.getWithDefault("defaultValue", elem::js::Number(0));
 
-        auto* p = new juce::AudioParameterFloat(
+        auto *p = new juce::AudioParameterFloat(
             juce::ParameterID(paramId, 1),
             name,
             {static_cast<float>(minValue), static_cast<float>(maxValue)},
-            defValue
-        );
+            defValue);
 
         p->addListener(this);
         addParameter(p);
 
         // Push a new ParameterReadout onto the list to represent this parameter
-        paramReadouts.emplace_back(ParameterReadout { static_cast<float>(defValue), false });
+        paramReadouts.emplace_back(ParameterReadout{static_cast<float>(defValue), false});
 
         // Update our state object with the default parameter value
         state.insert_or_assign(paramId, defValue);
@@ -82,14 +81,14 @@ EffectsPluginProcessor::EffectsPluginProcessor()
 
 EffectsPluginProcessor::~EffectsPluginProcessor()
 {
-    for (auto& p : getParameters())
+    for (auto &p : getParameters())
     {
         p->removeListener(this);
     }
 }
 
 //==============================================================================
-juce::AudioProcessorEditor* EffectsPluginProcessor::createEditor()
+juce::AudioProcessorEditor *EffectsPluginProcessor::createEditor()
 {
     return new WebViewEditor(this, getAssetsDirectory(), 800, 704);
 }
@@ -128,8 +127,8 @@ double EffectsPluginProcessor::getTailLengthSeconds() const
 //==============================================================================
 int EffectsPluginProcessor::getNumPrograms()
 {
-    return 1;   // NB: some hosts don't cope very well if you tell them there are 0 programs,
-                // so this should be at least 1, even if you're not really implementing programs.
+    return 1; // NB: some hosts don't cope very well if you tell them there are 0 programs,
+              // so this should be at least 1, even if you're not really implementing programs.
 }
 
 int EffectsPluginProcessor::getCurrentProgram()
@@ -137,12 +136,12 @@ int EffectsPluginProcessor::getCurrentProgram()
     return 0;
 }
 
-void EffectsPluginProcessor::setCurrentProgram (int /* index */) {}
-const juce::String EffectsPluginProcessor::getProgramName (int /* index */) { return {}; }
-void EffectsPluginProcessor::changeProgramName (int /* index */, const juce::String& /* newName */) {}
+void EffectsPluginProcessor::setCurrentProgram(int /* index */) {}
+const juce::String EffectsPluginProcessor::getProgramName(int /* index */) { return {}; }
+void EffectsPluginProcessor::changeProgramName(int /* index */, const juce::String & /* newName */) {}
 
 //==============================================================================
-void EffectsPluginProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
+void EffectsPluginProcessor::prepareToPlay(double sampleRate, int samplesPerBlock)
 {
     // Some hosts call `prepareToPlay` on the real-time thread, some call it on the main thread.
     // To address the discrepancy, we check whether anything has changed since our last known
@@ -151,7 +150,8 @@ void EffectsPluginProcessor::prepareToPlay (double sampleRate, int samplesPerBlo
     //
     // JUCE will synchronously handle the async update if it understands
     // that we're already on the main thread.
-    if (sampleRate != lastKnownSampleRate || samplesPerBlock != lastKnownBlockSize) {
+    if (sampleRate != lastKnownSampleRate || samplesPerBlock != lastKnownBlockSize)
+    {
         lastKnownSampleRate = sampleRate;
         lastKnownBlockSize = samplesPerBlock;
 
@@ -168,12 +168,12 @@ void EffectsPluginProcessor::releaseResources()
     // spare memory, etc.
 }
 
-bool EffectsPluginProcessor::isBusesLayoutSupported (const AudioProcessor::BusesLayout& layouts) const
+bool EffectsPluginProcessor::isBusesLayoutSupported(const AudioProcessor::BusesLayout &layouts) const
 {
     return true;
 }
 
-void EffectsPluginProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& /* midiMessages */)
+void EffectsPluginProcessor::processBlock(juce::AudioBuffer<float> &buffer, juce::MidiBuffer & /* midiMessages */)
 {
     // Copy the input so that our input and output buffers are distinct
     scratchBuffer.makeCopyOf(buffer, true);
@@ -182,28 +182,28 @@ void EffectsPluginProcessor::processBlock (juce::AudioBuffer<float>& buffer, juc
     buffer.clear();
 
     // Process the elementary runtime
-    if (runtime != nullptr) {
+    if (runtime != nullptr)
+    {
         runtime->process(
-            const_cast<const float**>(scratchBuffer.getArrayOfWritePointers()),
+            const_cast<const float **>(scratchBuffer.getArrayOfWritePointers()),
             getTotalNumInputChannels(),
-            const_cast<float**>(buffer.getArrayOfWritePointers()),
+            const_cast<float **>(buffer.getArrayOfWritePointers()),
             buffer.getNumChannels(),
             buffer.getNumSamples(),
-            nullptr
-        );
+            nullptr);
     }
 }
 
-void EffectsPluginProcessor::parameterValueChanged (int parameterIndex, float newValue)
+void EffectsPluginProcessor::parameterValueChanged(int parameterIndex, float newValue)
 {
     // Mark the updated parameter value in the dirty list
-    auto& pr = *std::next(paramReadouts.begin(), parameterIndex);
+    auto &pr = *std::next(paramReadouts.begin(), parameterIndex);
 
-    pr.store({ newValue, true });
+    pr.store({newValue, true});
     triggerAsyncUpdate();
 }
 
-void EffectsPluginProcessor::parameterGestureChanged (int, bool)
+void EffectsPluginProcessor::parameterGestureChanged(int, bool)
 {
     // Not implemented
 }
@@ -213,7 +213,8 @@ void EffectsPluginProcessor::handleAsyncUpdate()
 {
     // First things first, we check the flag to identify if we should initialize the Elementary
     // runtime and engine.
-    if (shouldInitialize.exchange(false)) {
+    if (shouldInitialize.exchange(false))
+    {
         // TODO: This is definitely not thread-safe! It could delete a Runtime instance while
         // the real-time thread is using it. Depends on when the host will call prepareToPlay.
         runtime = std::make_unique<elem::Runtime<float>>(lastKnownSampleRate, lastKnownBlockSize);
@@ -222,7 +223,7 @@ void EffectsPluginProcessor::handleAsyncUpdate()
 
     // Next we iterate over the current parameter values to update our local state
     // object, which we in turn dispatch into the JavaScript engine
-    auto& params = getParameters();
+    auto &params = getParameters();
 
     // Reduce over the changed parameters to resolve our updated processor state
     for (size_t i = 0; i < paramReadouts.size(); ++i)
@@ -232,12 +233,13 @@ void EffectsPluginProcessor::handleAsyncUpdate()
         // value can be considered arbitrary. Only when we exchange and find the dirty flag
         // true do we consider the value as having been written by the processor since
         // we last looked.
-        auto& current = *std::next(paramReadouts.begin(), i);
+        auto &current = *std::next(paramReadouts.begin(), i);
         auto pr = current.exchange({0.0f, false});
 
         if (pr.dirty)
         {
-            if (auto* pf = dynamic_cast<juce::AudioParameterFloat*>(params[i])) {
+            if (auto *pf = dynamic_cast<juce::AudioParameterFloat *>(params[i]))
+            {
                 auto paramId = pf->paramID.toStdString();
                 state.insert_or_assign(paramId, elem::js::Number(pr.value));
             }
@@ -252,7 +254,8 @@ void EffectsPluginProcessor::initJavaScriptEngine()
     jsContext = choc::javascript::createQuickJSContext();
 
     // Install some native interop functions in our JavaScript environment
-    jsContext.registerFunction("__postNativeMessage__", [this](choc::javascript::ArgumentList args) {
+    jsContext.registerFunction("__postNativeMessage__", [this](choc::javascript::ArgumentList args)
+                               {
         auto const batch = elem::js::parseJSON(args[0]->toString());
         auto const rc = runtime->applyInstructions(batch);
 
@@ -260,10 +263,10 @@ void EffectsPluginProcessor::initJavaScriptEngine()
             dispatchError("Runtime Error", elem::ReturnCode::describe(rc));
         }
 
-        return choc::value::Value();
-    });
+        return choc::value::Value(); });
 
-    jsContext.registerFunction("__log__", [this](choc::javascript::ArgumentList args) {
+    jsContext.registerFunction("__log__", [this](choc::javascript::ArgumentList args)
+                               {
         const auto* kDispatchScript = R"script(
 (function() {
   console.log(...JSON.parse(%));
@@ -289,8 +292,7 @@ void EffectsPluginProcessor::initJavaScriptEngine()
             }
         }
 
-        return choc::value::Value();
-    });
+        return choc::value::Value(); });
 
     // A simple shim to write various console operations to our native __log__ handler
     jsContext.evaluate(R"shim(
@@ -326,7 +328,7 @@ void EffectsPluginProcessor::initJavaScriptEngine()
     jsContext.evaluate(dspEntryFileContents);
 
     // Re-hydrate from current state
-    const auto* kHydrateScript = R"script(
+    const auto *kHydrateScript = R"script(
 (function() {
   if (typeof globalThis.__receiveHydrationData__ !== 'function')
     return false;
@@ -342,7 +344,7 @@ void EffectsPluginProcessor::initJavaScriptEngine()
 
 void EffectsPluginProcessor::dispatchStateChange()
 {
-    const auto* kDispatchScript = R"script(
+    const auto *kDispatchScript = R"script(
 (function() {
   if (typeof globalThis.__receiveStateChange__ !== 'function')
     return false;
@@ -362,7 +364,8 @@ void EffectsPluginProcessor::dispatchStateChange()
 
     // First we try to dispatch to the UI if it's available, because running this step will
     // just involve placing a message in a queue.
-    if (auto* editor = static_cast<WebViewEditor*>(getActiveEditor())) {
+    if (auto *editor = static_cast<WebViewEditor *>(getActiveEditor()))
+    {
         editor->getWebViewPtr()->evaluateJavascript(expr);
     }
 
@@ -371,9 +374,9 @@ void EffectsPluginProcessor::dispatchStateChange()
     jsContext.evaluate(expr);
 }
 
-void EffectsPluginProcessor::dispatchError(std::string const& name, std::string const& message)
+void EffectsPluginProcessor::dispatchError(std::string const &name, std::string const &message)
 {
-    const auto* kDispatchScript = R"script(
+    const auto *kDispatchScript = R"script(
 (function() {
   if (typeof globalThis.__receiveError__ !== 'function')
     return false;
@@ -391,7 +394,8 @@ void EffectsPluginProcessor::dispatchError(std::string const& name, std::string 
 
     // First we try to dispatch to the UI if it's available, because running this step will
     // just involve placing a message in a queue.
-    if (auto* editor = static_cast<WebViewEditor*>(getActiveEditor())) {
+    if (auto *editor = static_cast<WebViewEditor *>(getActiveEditor()))
+    {
         editor->getWebViewPtr()->evaluateJavascript(expr);
     }
 
@@ -401,26 +405,31 @@ void EffectsPluginProcessor::dispatchError(std::string const& name, std::string 
 }
 
 //==============================================================================
-void EffectsPluginProcessor::getStateInformation (juce::MemoryBlock& destData)
+void EffectsPluginProcessor::getStateInformation(juce::MemoryBlock &destData)
 {
     auto serialized = elem::js::serialize(state);
-    destData.replaceAll((void *) serialized.c_str(), serialized.size());
+    destData.replaceAll((void *)serialized.c_str(), serialized.size());
 }
 
-void EffectsPluginProcessor::setStateInformation (const void* data, int sizeInBytes)
+void EffectsPluginProcessor::setStateInformation(const void *data, int sizeInBytes)
 {
-    try {
-        auto str = std::string(static_cast<const char*>(data), sizeInBytes);
+    try
+    {
+        auto str = std::string(static_cast<const char *>(data), sizeInBytes);
         auto parsed = elem::js::parseJSON(str);
         auto o = parsed.getObject();
-        for (auto  &i: o) {
+        for (auto &i : o)
+        {
             std::map<std::string, elem::js::Value>::iterator it;
             it = state.find(i.first);
-            if (it != state.end()) {
+            if (it != state.end())
+            {
                 state.insert_or_assign(i.first, i.second);
             }
         }
-    } catch(...) {
+    }
+    catch (...)
+    {
         // Failed to parse the incoming state, or the state we did parse was not actually
         // an object type. How you handle it is up to you, here we just ignore it
     }
@@ -428,7 +437,7 @@ void EffectsPluginProcessor::setStateInformation (const void* data, int sizeInBy
 
 //==============================================================================
 // This creates new instances of the plugin..
-juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
+juce::AudioProcessor *JUCE_CALLTYPE createPluginFilter()
 {
     return new EffectsPluginProcessor();
 }

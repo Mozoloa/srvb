@@ -2,18 +2,16 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import Interface from './Interface.jsx'
 
-import createHooks from 'zustand'
-import createStore from 'zustand/vanilla'
+import { useStore } from 'zustand'
+import { createStore } from 'zustand/vanilla'
 
 import './index.css'
 
 
 // Initial state management
 const store = createStore(() => { });
-const useStore = createHooks(store);
-
+const eventStore = createStore(() => { });
 const errorStore = createStore(() => ({ error: null }));
-const useErrorStore = createHooks(errorStore);
 
 // Interop bindings
 function requestParamValueUpdate(paramId, value) {
@@ -39,18 +37,28 @@ globalThis.__receiveStateChange__ = function (state) {
   store.setState(JSON.parse(state));
 };
 
+globalThis.__receiveGraphEvents__ = function (eventBatch) {
+  const batch = JSON.parse(eventBatch);
+  if (batch.length > 0) {
+    const map = batch.reduce((acc, event) => { acc[event.event.source] = event; return acc; }, {});
+    eventStore.setState(map);
+  }
+};
+
 globalThis.__receiveError__ = (err) => {
   errorStore.setState({ error: err });
 };
 
 // Mount the interface
 function App(props) {
-  let state = useStore();
-  let { error } = useErrorStore();
+  let state = useStore(store);
+  let events = useStore(eventStore);
+  let { error } = useStore(errorStore);
 
   return (
     <Interface
       {...state}
+      events={events}
       error={error}
       requestParamValueUpdate={requestParamValueUpdate}
       resetErrorState={() => errorStore.setState({ error: null })} />

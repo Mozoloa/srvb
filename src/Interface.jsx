@@ -1,8 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { XCircleIcon, XMarkIcon } from '@heroicons/react/20/solid'
-import Knob from './Knob.jsx';
+import { XCircleIcon, XMarkIcon } from '@heroicons/react/20/solid';
+import CompBlock from './channelStrip/CompBlock.jsx';
+import BandsBlock from './channelStrip/bandsBlocks.jsx';
+import ExpBlock from './channelStrip/ExpBlock.jsx';
+import Knob from './elements/Knob.jsx';
+import ScaledMeter from './elements/ScaledMeter.jsx';
 import manifest from '../public/manifest.json';
 import * as gfx from './graphics.jsx';
+import * as Util from './Utilities.js';
 
 function ErrorAlert({ message, reset }) {
   return (
@@ -32,10 +37,6 @@ function ErrorAlert({ message, reset }) {
 }
 
 export default function Interface(props) {
-  const colorProps = {
-    meterColor: '#bb832d',
-    knobColor: '#050505',
-  };
 
   // Initialize paramValues state with default values from the manifest
   const [paramValues, setParamValues] = useState(() => {
@@ -60,96 +61,70 @@ export default function Interface(props) {
   }, [props, paramValues]);
 
   const handleValueChange = (param, newValue) => {
-    const formattedValue = formatValueFromButton(newValue, param.paramId, param.min, param.max, param.log);
+    const formattedValue = Util.formatValueFromButton(newValue, param.paramId, param.min, param.max, param.log);
     setParamValues({ ...paramValues, [param.paramId]: formattedValue });
     props.requestParamValueUpdate(param.paramId, formattedValue);
   };
 
-
-  const formatValueForButton = (value, name, min, max, log) => {
-    let newValue = value;
-    if (log) {
-      newValue = Math.log(value / min) / Math.log(max / min);
-    } else {
-      newValue = (value - min) / (max - min);
-    }
-    /* console.log(`formatted ${name}: ${value} into ${newValue}`); */
-    return newValue;
-  }
-
-  const formatValueFromButton = (value, paramId, min, max, log) => {
-    let newValue = value;
-    if (log) {
-      newValue = min * Math.pow(max / min, value);
-    } else {
-      newValue = value * (max - min) + min;
-    };
-    if (paramId.includes('order')) {
-      newValue = parseInt(newValue);
-    }
-    return newValue; // Ensure the function returns the converted value
-  }
-
-  const formatValueForDisplay = (value, paramId) => {
-    value = Math.round(value * 100) / 100;
-    // Check if it's a frequency parameter and above 1KHz
-    if (paramId.includes('freq')) {
-      if (value >= 1000) {
-        return `${(value / 1000).toFixed(1)}k`;
-      }
-      return `${Math.round(value)}`;
-    }
-    if (paramId.includes('order')) {
-      if (value > 0) {
-        return parseInt(value) * 12;
-      }
-      return "OFF"
-    }
-    if (paramId.includes('env')) {
-      return `${Math.round(value * 10) / 10}ms`
-    }
-
-    // For other cases, round to one decimal place
-    return Math.round(value * 10) / 10;
-  };
-
+/*   if (!props.events) {
+    console.log('No events received');
+    return null;
+  } */
   return (
     <div id='main'>
       {props.error && (<ErrorAlert message={props.error.message} reset={props.resetErrorState} />)}
+      <div id='header'></div>
+      <div id='mainBlock'>
+      <div id='inputMeter'>
+          {/* <ScaledMeter
+            event={{
+              left: props.events.main_inputL,
+              right: props.events.main_inputR
+            }}
+            type={'input'}
+            direction={'vertical'}
+            girth={15}
+            subdivisions={16}
+            range={80}
+          /> */}
+        </div>
       <div id='controls'>
-        {/* Create a container for each parameter group */}
-        {['comp', 'env', 'out'].map(groupKey => {
-          // Determine the SVG component key (strip numbers if 'peak')
-          const svgKey = groupKey.includes('peak') ? 'peak' : groupKey;
-          return (
-            <div key={groupKey} id={groupKey} className="group-container">
-              {gfx[svgKey] ? React.createElement(gfx[svgKey], { className: "group-gfx" }) : groupKey.split("_")[0].toUpperCase()}
-              <div className="group-params">
-                {/* Filter and map parameters that belong to the current group */}
-                {manifest.parameters.filter(param => param.paramId.startsWith(groupKey)).map(param => {
-                  const isOffset = param.paramId.includes('_ratio') || param.paramId.includes('_atk') || param.paramId.includes('_mix');
-                  const buttonValue = formatValueForButton(paramValues[param.paramId], param.paramId, param.min, param.max, param.log);
-                  return (
-                    <div key={param.paramId} id={param.paramId} className={`group-param ${isOffset ? 'self-end' : ''}`}>
-                      <Knob
-                        value={buttonValue}
-                        onChange={(newValue) => handleValueChange(param, newValue)}
-                        name={param.name}
-                        paramId={param.paramId}
-                        {...colorProps}
-                      />
-                      <div className="param-value">
-                        {`${formatValueForDisplay(paramValues[param.paramId], param.paramId)}`}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          );
-        })}
+        
+  {/*       <ExpBlock
+          props={props}
+          manifest={manifest}
+          paramValues={paramValues}
+          handleValueChange={handleValueChange}
+        /> */}
+        <BandsBlock
+          props={props}
+          manifest={manifest}
+          paramValues={paramValues}
+          handleValueChange={handleValueChange}
+        />
+        <CompBlock
+          props={props}
+          manifest={manifest}
+          paramValues={paramValues}
+          handleValueChange={handleValueChange}
+        />
+      
       </div>
-    </div>
+      <div id='inputMeter'>
+         {/*  <ScaledMeter
+            event={{
+              left: props.events.main_outputL,
+              right: props.events.main_outputR
+            }}
+            type={'output'}
+            direction={'vertical'}
+            girth={15}
+            subdivisions={12}
+            range={60}
+          /> */}
+        </div>
+      </div>
+    </div >
   );
 
 }
