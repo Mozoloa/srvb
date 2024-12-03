@@ -51,31 +51,32 @@ export default function Interface(props) {
     manifest.parameters.forEach(param => {
       const paramId = param.paramId;
       if (props[paramId] !== undefined && props[paramId] !== paramValues[paramId]) {
-/*         console.log(`Updating param ${paramId}: ${props[paramId]}`);
- */        setParamValues(currentValues => ({
-        ...currentValues,
-        [paramId]: props[paramId]
-      }));
+        setParamValues(currentValues => ({
+          ...currentValues,
+          [paramId]: props[paramId]
+        }));
       }
     });
   }, [props, paramValues]);
 
   const handleValueChange = (param, newValue) => {
+
     const formattedValue = Util.formatValueFromButton(newValue, param.paramId, param.min, param.max, param.log);
+    /* console.log(`Setting ${param.paramId} to ${formattedValue}`); */
     setParamValues({ ...paramValues, [param.paramId]: formattedValue });
     props.requestParamValueUpdate(param.paramId, formattedValue);
   };
 
-/*   if (!props.events) {
-    console.log('No events received');
-    return null;
-  } */
+  /*   if (!props.events) {
+      console.log('No events received');
+      return null;
+    } */
   return (
     <div id='main'>
       {props.error && (<ErrorAlert message={props.error.message} reset={props.resetErrorState} />)}
       <div id='header'></div>
       <div id='mainBlock'>
-      <div id='inputMeter'>
+        <div id='inputMeter'>
           {/* <ScaledMeter
             event={{
               left: props.events.main_inputL,
@@ -88,30 +89,31 @@ export default function Interface(props) {
             range={80}
           /> */}
         </div>
-      <div id='controls'>
-        
-  {/*       <ExpBlock
+        <div id='controls'>
+
+          {/*       <ExpBlock
           props={props}
           manifest={manifest}
           paramValues={paramValues}
           handleValueChange={handleValueChange}
         /> */}
-        <BandsBlock
-          props={props}
-          manifest={manifest}
-          paramValues={paramValues}
-          handleValueChange={handleValueChange}
-        />
-        <CompBlock
-          props={props}
-          manifest={manifest}
-          paramValues={paramValues}
-          handleValueChange={handleValueChange}
-        />
-      
-      </div>
-      <div id='inputMeter'>
-         {/*  <ScaledMeter
+          <CompBlock
+            props={props}
+            manifest={manifest}
+            paramValues={paramValues}
+            handleValueChange={handleValueChange}
+          />
+          <BandsBlock
+            props={props}
+            manifest={manifest}
+            paramValues={paramValues}
+            handleValueChange={handleValueChange}
+          />
+
+
+        </div>
+        <div id='inputMeter'>
+          {/*  <ScaledMeter
             event={{
               left: props.events.main_outputL,
               right: props.events.main_outputR

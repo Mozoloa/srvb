@@ -9,7 +9,7 @@
     height: 60px;
 }
 
-#knob-name {
+.knob-name {
     color: var(--text-color);
     font-size: 0.7rem;
     font-weight: bold;

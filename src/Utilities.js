@@ -26,14 +26,15 @@ const formatValueForDisplay = (value, paramId) => {
     value = Math.round(value * 100) / 100;
     // Check if it's a frequency parameter and above 1KHz
     if (paramId.includes('freq') || paramId.includes('xover')) {
+
         if (value >= 1000) {
-            return `${(value / 1000).toFixed(1)}KHz`;
+            return `${(value / 1000).toFixed(1)}K`;
         }
-        return `${Math.round(value)}Hz`;
+        return `${Math.round(value)}`;
     }
     if (paramId.includes('order')) {
         if (value > 0) {
-            return parseInt(value) * 12;
+            return parseInt(value) * 24;
         }
         return "OFF"
     }

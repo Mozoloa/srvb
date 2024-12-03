@@ -5,12 +5,12 @@
   },
   "parameters": [
     {
-      "paramId": "comp_main_threshold",
-      "name": "Threshold",
-      "min": -60.0,
-      "max": 0.0,
-      "defaultValue": -30,
-      "hue": 200
+      "paramId": "comp_main_order",
+      "name": "Slope",
+      "min": 1,
+      "max": 2,
+      "defaultValue": 1,
+      "hue": 35
     },
     {
       "paramId": "comp_main_ratio",
@@ -70,9 +70,9 @@
     {
       "paramId": "bands_low_threshold",
       "name": "Low Threshold",
-      "min": -12.0,
-      "max": 12.0,
-      "defaultValue": 0,
+      "min": -60.0,
+      "max": 0,
+      "defaultValue": -20,
       "hue": 200
     },
     {
@@ -81,14 +81,14 @@
       "min": -12.0,
       "max": 12.0,
       "defaultValue": 0,
-      "hue": 200
+      "hue": 0
     },
     {
       "paramId": "bands_lowmid_threshold",
       "name": "LowMid Threshold",
-      "min": -12.0,
-      "max": 12.0,
-      "defaultValue": 0,
+      "min": -60.0,
+      "max": 0,
+      "defaultValue": -20,
       "hue": 200
     },
     {
@@ -97,14 +97,14 @@
       "min": -12.0,
       "max": 12.0,
       "defaultValue": 0,
-      "hue": 200
+      "hue": 0
     },
     {
       "paramId": "bands_mid_threshold",
       "name": "Mid Threshold",
-      "min": -12.0,
-      "max": 12.0,
-      "defaultValue": 0,
+      "min": -60.0,
+      "max": 0,
+      "defaultValue": -20,
       "hue": 200
     },
     {
@@ -113,14 +113,14 @@
       "min": -12.0,
       "max": 12.0,
       "defaultValue": 0,
-      "hue": 200
+      "hue": 0
     },
     {
       "paramId": "bands_highmid_threshold",
       "name": "HighMid Threshold",
-      "min": -12.0,
-      "max": 12.0,
-      "defaultValue": 0,
+      "min": -60.0,
+      "max": 0,
+      "defaultValue": -20,
       "hue": 200
     },
     {
@@ -129,14 +129,14 @@
       "min": -12.0,
       "max": 12.0,
       "defaultValue": 0,
-      "hue": 200
+      "hue": 0
     },
     {
       "paramId": "bands_high_threshold",
       "name": "High Threshold",
-      "min": -12.0,
-      "max": 12.0,
-      "defaultValue": 0,
+      "min": -60.0,
+      "max": 0,
+      "defaultValue": -20,
       "hue": 200
     },
     {
@@ -145,12 +145,12 @@
       "min": -12.0,
       "max": 12.0,
       "defaultValue": 0,
-      "hue": 200
+      "hue": 0
     },
     {
       "paramId": "bands_lowlowmid_xover",
       "name": "LowLowMid Xover",
-      "min": 20,
+      "min": 60,
       "max": 200,
       "defaultValue": 100,
       "log": true
@@ -175,7 +175,7 @@
       "paramId": "bands_highmidhigh_xover",
       "name": "HighMidHigh Xover",
       "min": 2000,
-      "max": 10000,
+      "max": 12000,
       "defaultValue": 5000,
       "log": true
     },

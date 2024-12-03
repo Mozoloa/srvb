@@ -19,7 +19,7 @@ let refs = new RefMap(core);
 let prevState = null;
 
 function shouldRender(prevState, nextState) {
-  if (prevState === null || prevState.sampleRate !== nextState.sampleRate) {
+  if (prevState === null || prevState.sampleRate !== nextState.sampleRate || prevState.comp_main_order !== nextState.comp_main_order) {
     console.log('Full render');
     return true;
   }
@@ -46,9 +46,9 @@ function updateProps(state) {
     }
     try {
       refs.update(k, { value: v });
-      /*   console.log(`Updatied ref '${k}' with value`, v); */
+      /* console.log(`Updatied ref '${k}' with value`, v); */
     } catch (error) {
-      console.log(`Error updating ref '${k}': '${error}'`);
+      /*  console.log(`Error updating ref '${k}': '${error}'`); */
     }
   }
 }
@@ -72,7 +72,7 @@ globalThis.__receiveStateChange__ = (serializedState) => {
     );
     console.log("rendering", stats);
   } else {
-    /* console.log('Updating refs with new state', state); */
+    console.log('Updating refs with new state', state);
     updateProps(state);
   }
 

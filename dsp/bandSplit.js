@@ -44,9 +44,9 @@ function FourthOderBF(type, cutoffFrequency, xn) {
 export default function bandpass(lowFreq, highFreq, slope, gain, xn) {
     let EQed;
 
-    console.log('bandpass lowFreq:', lowFreq, 'highFreq:', highFreq, 'slope:', slope);
+    /* console.log('bandpass lowFreq:', lowFreq, 'highFreq:', highFreq, 'slope:', slope); */
 
-    if (slope === 0) {
+    if (slope === 1) {
         const bands = [];
         // Add highpass only if lowFreq is provided
         if (lowFreq != null) {
@@ -60,7 +60,7 @@ export default function bandpass(lowFreq, highFreq, slope, gain, xn) {
         // Apply the filters sequentially for 24 dB/oct slope
         EQed = eqSignal(bands, xn);
         EQed = eqSignal(bands, EQed);
-    } else if (slope === 1) {
+    } else if (slope === 2) {
         // Handle 4th-order Butterworth
         if (lowFreq != null) {
             EQed = FourthOderBF('highpass', lowFreq, xn);

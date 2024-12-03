@@ -1,105 +1,82 @@
 import React from 'react';
 import ScaledMeter from '../elements/ScaledMeter.jsx';
-import Knob from '../elements/Knob.jsx';
 import * as Util from '../Utilities.js';
+import ValueCtrl from '../elements/ValueCtrl.jsx';
+import XoverGraph from '../elements/XoverGraph.jsx';
 
 function BandsBlock({ props, manifest, paramValues, handleValueChange }) {
     return (
         <div id="bandsBlock">
-            <div id = "legend"></div>
-            <div id = "bands">
-                <div id = "xovers">
-                    {["lowlowmid", "lowmidmid", "midhighmid", "highmidhigh"].map(xoverKey => {
-                        return (
-                            <div>
-                                {manifest.parameters.filter(param => (param.paramId.startsWith("bands") &&param.paramId.includes(xoverKey))).map(param => {
-                                const buttonValue = Util.formatValueForButton(paramValues[param.paramId], param.paramId, param.min, param.max, param.log);
-                                const buttonDefaultValue = Util.formatValueForButton(param.defaultValue, param.paramId, param.min, param.max, param.log);
-                                const accentColor = param.hue ? `hsl(${param.hue},100%, 60%)` : '#ccc';
-                                return (
-                                    <div key={param.paramId} id={param.paramId} className={`group-param`}>
-                                        <Knob
-                                            value={buttonValue}
-                                            defaultValue={buttonDefaultValue}
-                                            onChange={(newValue) => handleValueChange(param, newValue)}
-                                            name={param.name}
-                                            paramId={param.paramId}
-                                            accentColor={accentColor}
-                                            knobColor="#050505"
-                                        />
-                                        <div className="param-value" style={{ color: accentColor }}>
-                                            {`${Util.formatValueForDisplay(paramValues[param.paramId], param.paramId)}`}
-                                        </div>
-                                    </div>
-                                );
-                            })}
-                            </div>
-                        )
-                    }
-                    )}
-                </div>
-                <div id="bandsBox">
-                {["Low", "LowMid", "Mid", "HighMid", "High"].map(bandKey => {
+            <div id="bandsBox">
+                {["Low", "LowMid", "Mid", "HighMid", "High"].map((bandKey, index) => {
                     return (
-                        <div key={bandKey} id={bandKey} className="band group-container">
-                            <div class = "band-meter" ></div>
-                            <div className="band-offsets">
-                            {manifest.parameters.filter(param => (param.paramId.startsWith("bands") &&param.paramId.includes("_"+bandKey.toLowerCase()+"_"))).map(param => {
+                        <div key={bandKey} id={bandKey} className={`band group-container`}>
+                            <div className="band-meter-block">
+
+                            </div>
+                            <div className="band-ctrls">
+                                {manifest.parameters.filter(param => (param.paramId.startsWith("bands") && param.paramId.includes("_" + bandKey.toLowerCase() + "_"))).map(param => {
                                     const buttonValue = Util.formatValueForButton(paramValues[param.paramId], param.paramId, param.min, param.max, param.log);
                                     const buttonDefaultValue = Util.formatValueForButton(param.defaultValue, param.paramId, param.min, param.max, param.log);
                                     const accentColor = param.hue ? `hsl(${param.hue},100%, 60%)` : '#ccc';
                                     return (
                                         <div key={param.paramId} id={param.paramId} className={`group-param`}>
-                                            <Knob
+                                            <ValueCtrl
                                                 value={buttonValue}
+                                                actualValue={paramValues[param.paramId]}
                                                 defaultValue={buttonDefaultValue}
                                                 onChange={(newValue) => handleValueChange(param, newValue)}
                                                 name={param.name}
                                                 paramId={param.paramId}
                                                 accentColor={accentColor}
-                                                knobColor="#050505"
                                             />
-                                            <div className="param-value" style={{ color: accentColor }}>
-                                                {`${Util.formatValueForDisplay(paramValues[param.paramId], param.paramId)}`}
-                                            </div>
+                                            <div className='knob-name'>{param.paramId.endsWith("threshold") ? "Tresh." : "Gain"}</div>
                                         </div>
+
                                     );
                                 })}
-                                {/* <div className="group-name">{bandKey}</div> */}
                             </div>
                         </div>
-                    )
+                    );
                 })}
-                </div>
             </div>
-        </div>
-    )
-   /*  return (
-        <div id="bandsBlock">
-           {manifest.parameters.filter(param => param.paramId.startsWith("bands")).map(param => {
+
+            <div id="xovers">
+                {["lowlowmid", "lowmidmid", "midhighmid", "highmidhigh"].map(xoverKey => {
+                    return (
+                        <div key={xoverKey}>
+                            {manifest.parameters.filter(param => (param.paramId.startsWith("bands") && param.paramId.includes(xoverKey))).map(param => {
                                 const buttonValue = Util.formatValueForButton(paramValues[param.paramId], param.paramId, param.min, param.max, param.log);
                                 const buttonDefaultValue = Util.formatValueForButton(param.defaultValue, param.paramId, param.min, param.max, param.log);
                                 const accentColor = param.hue ? `hsl(${param.hue},100%, 60%)` : '#ccc';
                                 return (
                                     <div key={param.paramId} id={param.paramId} className={`group-param`}>
-                                        <div id='knob-name'>{param.name}</div>
-                                        <Knob
+                                        <ValueCtrl
                                             value={buttonValue}
+                                            actualValue={paramValues[param.paramId]}
                                             defaultValue={buttonDefaultValue}
                                             onChange={(newValue) => handleValueChange(param, newValue)}
                                             name={param.name}
                                             paramId={param.paramId}
                                             accentColor={accentColor}
-                                            knobColor="#050505"
                                         />
-                                        <div className="param-value" style={{ color: accentColor }}>
-                                            {`${Util.formatValueForDisplay(paramValues[param.paramId], param.paramId)}`}
-                                        </div>
                                     </div>
                                 );
                             })}
+                        </div>
+                    )
+                }
+                )}
+            </div>
+            <XoverGraph
+                lowlowmid={paramValues['bands_lowlowmid_xover']}
+                lowmidmid={paramValues['bands_lowmidmid_xover']}
+                midhighmid={paramValues['bands_midhighmid_xover']}
+                highmidhigh={paramValues['bands_highmidhigh_xover']}
+            />
         </div>
-    ) */
+
+    )
 }
 
 

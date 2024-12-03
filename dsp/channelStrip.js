@@ -11,15 +11,15 @@ export default function channelStrip(props, left, right) {
         left: el.meter({ name: "main_inputL" }, left),
         right: el.meter({ name: "main_inputR" }, right)
     }
-
     const xOver = 150
-    const slope = 0
+    const slope = props.comp_main_order;
 
     const LowGain = el.db2gain(el.sm(props.bands_low_gain));
     const LowMidGain = el.db2gain(el.sm(props.bands_lowmid_gain));
     const MidGain = el.db2gain(el.sm(props.bands_mid_gain));
     const HighMidGain = el.db2gain(el.sm(props.bands_highmid_gain));
     const HighGain = el.db2gain(el.sm(props.bands_high_gain));
+
 
     const LLMXover = el.sm(props.bands_lowlowmid_xover);
     const LMMXover = el.sm(props.bands_lowmidmid_xover);
@@ -55,8 +55,6 @@ export default function channelStrip(props, left, right) {
         left: el.add(lowBand.left, lowMidBand.left, midBand.left, highMidBand.left, highBand.left),
         right: el.add(lowBand.right, lowMidBand.right, midBand.right, highMidBand.right, highBand.right)
     }
-
-    /* const lowBand = bandSplit(null, 500, slope, input.left, input.right); */
 
     return {
         left: el.meter({ name: "main_outputL" }, output.left),

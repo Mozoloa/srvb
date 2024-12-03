@@ -51,7 +51,7 @@ function CompBlock({ props, manifest, paramValues, handleValueChange }) {
                                 const accentColor = param.hue ? `hsl(${param.hue},100%, 60%)` : '#ccc';
                                 return (
                                     <div key={param.paramId} id={param.paramId} className={`group-param`}>
-                                        <div id='knob-name'>{param.name}</div>
+                                        <div className='knob-name'>{param.name}</div>
                                         <Knob
                                             value={buttonValue}
                                             defaultValue={buttonDefaultValue}

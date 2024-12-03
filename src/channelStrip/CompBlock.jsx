@@ -9,8 +9,8 @@ function CompBlock({ props, manifest, paramValues, handleValueChange }) {
     return (
         <div id="compBlock">
             {/* <div className='group-container'> */}
-                {/* <div className="group-params"> */}
-                   {/*  <ScaledMeter
+            {/* <div className="group-params"> */}
+            {/*  <ScaledMeter
                         event={
                             {
                                 left: props.events.comp_envL,
@@ -21,16 +21,16 @@ function CompBlock({ props, manifest, paramValues, handleValueChange }) {
                         direction="vertical"
                         decay={1}
                     /> */}
-                    {/* Compression curve graph */}
-                    {/* <CompGraph
+            {/* Compression curve graph */}
+            {/* <CompGraph
                         threshold={props.comp_main_threshold}
                         ratio={props.comp_main_ratio}
                         knee={props.comp_main_knee}
                         events={props.events}
                     /> */}
-               {/*  </div> */}
-           {/*  </div> */}
-      {/*       <ScaledMeter
+            {/*  </div> */}
+            {/*  </div> */}
+            {/*       <ScaledMeter
                 event={props.events.comp_gr}
                 type={'gr'}
                 direction="horizontal"
@@ -51,7 +51,7 @@ function CompBlock({ props, manifest, paramValues, handleValueChange }) {
                                 const accentColor = param.hue ? `hsl(${param.hue},100%, 60%)` : '#ccc';
                                 return (
                                     <div key={param.paramId} id={param.paramId} className={`group-param`}>
-                                        <div id='knob-name'>{param.name}</div>
+                                        <div className='knob-name'>{param.name}</div>
                                         <Knob
                                             value={buttonValue}
                                             defaultValue={buttonDefaultValue}
