@@ -37,14 +37,9 @@ globalThis.__receiveStateChange__ = function (state) {
   store.setState(JSON.parse(state));
 };
 
-globalThis.__receiveGraphEvents__ = function (eventBatch) {
-  const batch = JSON.parse(eventBatch);
-  if (batch.length > 0) {
-    const map = batch.reduce((acc, event) => { acc[event.event.source] = event; return acc; }, {});
-    eventStore.setState(map);
-  }
+globalThis.__receiveGraphEvents__ = function(eventBatch) {
+  console.log(JSON.parse(eventBatch));
 };
-
 globalThis.__receiveError__ = (err) => {
   errorStore.setState({ error: err });
 };
@@ -52,13 +47,11 @@ globalThis.__receiveError__ = (err) => {
 // Mount the interface
 function App(props) {
   let state = useStore(store);
-  let events = useStore(eventStore);
   let { error } = useStore(errorStore);
 
   return (
     <Interface
       {...state}
-      events={events}
       error={error}
       requestParamValueUpdate={requestParamValueUpdate}
       resetErrorState={() => errorStore.setState({ error: null })} />
